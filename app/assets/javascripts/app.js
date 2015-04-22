@@ -8,6 +8,19 @@ angular.module('barter').config(function($httpProvider) {
     $('meta[name=csrf-token]').attr('content');
 });
 
+angular.module('barter').directive('fileInput', ['$parse', function($parse){
+  return {
+    restrict:'A',
+    link: function(scope, elm, attrs) {
+      elm.bind('change', function(){
+        $parse(attrs.fileInput).assign(scope, elm[0].files);
+        scope.$apply();
+      });
+    }
+  };
+}]);
+
+
 angular.module('barter').controller('AppController', ['$router', '$http', AppController]);
 
 function AppController ($router, $http) {

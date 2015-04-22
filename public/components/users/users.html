@@ -1,5 +1,4 @@
 <div id="user-container">
-
   <div id="user-aboutme">
     <h4 class="center bold underline">{{users.user.username}} </h4>
     <p>Rating: {{users.user.score}}</p>
@@ -132,7 +131,7 @@
   </div>
 
 <!-- Creating new talent -->
-  <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#userNewTalent">
+  <button type="button" class="btn btn-default btn-sm" data-toggle="modal" ng-click="users.getS3UploadParams()" data-target="#userNewTalent">
     Add a talent
   </button>
   <div id="userNewTalent" class="modal fade">
@@ -144,7 +143,7 @@
         <div class="modal-body">
             <form >
               Title: <input type="text" name="title" ng-model="users.talent.title">
-              Sample: <input type="text" name="sample" ng-model="users.talent.sample">
+              Sample: <input type="file" name="sample" file-input="users.upload_file_entered">
               Description: <input type="text" name="description" ng-model="users.talent.description">
               Category:
               <select id="user-select" ng-model="users.talent.type">
@@ -342,7 +341,7 @@
           </ul>
           <button class="btn btn-default" ng-click="tab = 0" ng-show="timeslot.offers.length && tab !== 69">close</button>
         </div>
-        <button class="btn btn-default" ng-click="users.createOffer(timeslot);tab = 66" ng-show="app.current_user.id !== users.user.id && && !users.isClosed(timeslot) && !users.hasOffer(timeslot, app.current_user.id)">create offer</button>
+        <button class="btn btn-default" ng-click="users.createOffer(timeslot);tab = 66" ng-show="app.current_user.id !== users.user.id && !users.isClosed(timeslot) && !users.hasOffer(timeslot, app.current_user.id)">create offer</button>
         <button ng-show="app.current_user.id === users.user.id" ng-click="users.deleteTimeslot(timeslot)">delete timeslot</button>
       </div>
     </div>
