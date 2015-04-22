@@ -74,31 +74,41 @@ angular.module('barter')
     this.loadUserGraph();
   };
 
-/*
-{"AWSAccessKeyId":"AKIAJP6TZ7GN2L25IVZA",
-"key":"uploads/a48bc720-64fa-40d7-9ad0-a7d51aeff700/${filename}",
-"policy":"eyJleHBpcmF0aW9uIjoiMjAxNS0wNC0yMVQyMTo1OTowMloiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiIifSxbInN0YXJ0cy13aXRoIiwiJGtleSIsInVwbG9hZHMvYTQ4YmM3MjAtNjRmYS00MGQ3LTlhZDAtYTdkNTFhZWZmNzAwLyJdLHsic3VjY2Vzc19hY3Rpb25fc3RhdHVzIjoiMjAxIn0seyJhY2wiOiJwdWJsaWMtcmVhZCJ9XX0=",
-"signature":"xU4ObcO67jSLGrf7gOPXEuM4UX4=",
-"success_action_status":"201",
-"acl":"public-read"}
-*/
+
+  function readLocationFromXml(data) {
+    regex = /<Location>(.+)<\/Location>/
+    var match = regex.exec(data);
+    if (match && match.length > 1) {
+      return match[1];
+    }
+  }
+
+  this.saveTalentDetailsToRails = function(xmlFromAmazon) {
+    this.talent.sample = readLocationFromXml(xmlFromAmazon);
+    $http.post('/talents', this.talent)
+    .success(function(railsResponse){
+      this.loadUserGraph(); 
+    }.bind(this));
+  };
 
   this.saveTalent = function(){
     var fd = new FormData();
     for (var k in this.s3Parameters) {
-      fd.append(k, this.s3Parameters[k]);
+      var v = this.s3Parameters[k];
+      fd.append(k, v);
     }
-
-    fd.append('file', this.upload_file_entered);
-    $http.post('https://barter-upload.s3.amazonaws.com/', fd, {
-            transformRequest: angular.identity,
-            headers: {'Content-Type': undefined}
-        }).success(function(data){
-         console.log(data);
-      //$http.post('/talents', this.talent);
-      //this.loadUserGraph();
-
-    }.bind(this));
+    fd.append('file', this.upload_file_entered[0]);
+    var options = {
+      transformRequest: angular.identity,
+      headers: {'Content-Type': undefined}
+    };
+    var dfd = $http.post('https://sc-barter.s3.amazonaws.com/', fd, options);
+    dfd.success(function(data){
+         this.saveTalentDetailsToRails(data);
+    }.bind(this)); 
+    dfd.error(function(data, status) {
+       console.error('Upload error', status, data);
+    });
   };
 
   this.deleteTalent = function(talent) {
@@ -235,7 +245,6 @@ angular.module('barter')
   this.getS3UploadParams = function() {
     $http.get('/talent_forms/new').success(function(data){
       this.s3Parameters = data;
-      console.log('s3data', data);
     }.bind(this));
   }
 
