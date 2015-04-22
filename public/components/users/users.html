@@ -144,7 +144,7 @@ S3 Params: {{users.s3Parameters}}
         <div class="modal-body">
             <form >
               Title: <input type="text" name="title" ng-model="users.talent.title">
-              Sample: <input type="file" name="sample" ng-model="upload_file_entered">
+              Sample: <input type="file" name="sample" file-input="users.upload_file_entered">
               Description: <input type="text" name="description" ng-model="users.talent.description">
               Category:
               <select id="user-select" ng-model="users.talent.type">
